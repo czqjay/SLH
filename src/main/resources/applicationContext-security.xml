@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	- Sample namespace-based configuration
+	-
+-->
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<debug />
+	
+	<global-method-security pre-post-annotations="enabled" />
+ 
+	<http pattern="/html/js/**" security="none" />
+	<http pattern="/html/js/common/**" security="none" />
+	<http pattern="/loggout.jsp" security="none" />
+	<http pattern="/login.jsp" security="none" />
+	<http pattern="/logintop.jsp" security="none" /> 
+	<http pattern="/html/theme/**" security="none" />
+	<http pattern="/html/**/js/**" security="none" />
+	<http pattern="/html/**/*.css" security="none" />
+	<http pattern="/html/**/*.png" security="none" />
+	<http pattern="/html/**/*.jpg" security="none" />
+	<http pattern="/upload/**/*.jpg" security="none" />
+	<http pattern="/upload/*.*" security="none" />
+	<http pattern="/upload/**/*.d*" security="none" />
+	<http pattern="/wx/*.action*" security="none" /> 
+	<http pattern="/*.txt*" security="none" /> 
+	<http pattern="/html/wx/*.jsp" security="none" /> 
+	<http pattern="/html/wx/js/**" security="none" /> 
+	<http pattern="/html/wx/css/**" security="none" />  
+	<http pattern="/reg/regSave.action" security="none" />   
+	
+	
+	<http use-expressions="true"
+		access-decision-manager-ref="accessDecisionManager">
+		<intercept-url pattern="/**" access="isAuthenticated()" />
+		<form-login always-use-default-target="true"
+			login-page="/logintop.jsp" default-target-url="/html/index.jsp" />
+		<logout logout-success-url="/loggout.jsp" />
+		<!-- Uncomment to limit the number of sessions a user can have -->
+		<session-management  invalid-session-url="/logintop.jsp">
+			<concurrency-control expired-url="/logintop.jsp"  max-sessions="5"
+				error-if-maximum-exceeded="false" />
+				
+		</session-management>
+	</http>
+
+
+	<beans:bean id="accessDecisionManager"
+		class="org.springframework.security.access.vote.UnanimousBased">
+		<beans:property name="allowIfAllAbstainDecisions" value="false" />
+		<beans:property name="decisionVoters">
+			<beans:list>
+				<beans:bean
+					class="org.springframework.security.web.access.expression.WebExpressionVoter" />
+				<beans:bean
+					class="com.sunit.global.base.authorization.DBVoter" />
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+
+
+
+	<authentication-manager>
+		<authentication-provider>
+			<password-encoder hash="md5" />
+			<jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select  ACCOUNT_NAME as username,Pwd as password,1 as enabled from tb_user where ACCOUNT_NAME=? and flag='1'"
+				authorities-by-username-query="select  ACCOUNT_NAME as username,'ROLE_USER' as authority from tb_user where ACCOUNT_NAME=? and flag='1'" />
+		</authentication-provider>
+	</authentication-manager>
+</beans:beans>

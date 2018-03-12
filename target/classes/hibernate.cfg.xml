@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- <property name="hibernate.connection.provider_class">org.hibernate.connection.ProxoolConnectionProvider</property>
+			<property name="hibernate.proxool.pool_alias">server</property>
+			<property name="hibernate.proxool.xml">.\proxool.xml</property>
+			<property name="hibernate.proxool.existing_pool">true</property> -->
+		<!-- 
+			<property name="hibernate.connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+			<property name="hibernate.connection.url">jdbc:oracle:thin:@192.168.0.13:1522:server10</property>
+			<property name="hibernate.connection.username">accidentmanager</property>
+			<property name="hibernate.connection.password">sunit</property>
+		-->
+		<!-- SQL dialect -->
+		<!--<property name="hibernate.dialect">
+			org.hibernate.dialect.Oracle10gDialect
+		</property> --> 
+<property name="hibernate.dialect"> 
+			com.sunit.global.base.dialect.MySQL5DialectForXWT
+		</property>
+		<!-- Echo all executed SQL to stdout --> 
+		<!---->	<property name="hibernate.show_sql">false</property> 
+		<!-- <property name="hibernate.format_sql">true</property> -->
+
+		<!-- 使用EhCache -->
+
+
+		<!-- Disable the second-level cache  -->
+		<!-- <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>-->
+
+
+
+
+		<!--<property name="hibernate.connection.autocommit">true</property>-->
+		<property name="hibernate.generate_statistics">true</property>
+		<!--<property name="hibernate.connection.release_mode">auto</property>-->
+		<property name="hibernate.autoReconnect">true</property>
+		<property name="hibernate.connection.autoReconnectForPools">
+			true
+		</property>
+		<property
+			name="hibernate.connection.is-connection-validation-required">
+			true
+		</property>
+		<property name="hibernate.bytecode.use_reflection_optimizer">
+			true
+		</property> 
+ 
+   		<property name="connection.autoReconnect">true</property> 
+        <property name="connection.autoReconnectForPools">true</property> 
+        <property name="connection.is-connection-validation-required">true</property> 
+		 
+		<property name="hibernate.cache.use_second_level_cache">true</property>
+		<property name="hibernate.cache.use_query_cache">true</property>
+		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+
+		<!--<property name="hibernate.query.factory_class">org.hibernate.hql.classic.ClassicQueryTranslatorFactory</property> -->
+
+		<!-- Drop and re-create the database schema on startup -->
+		<!--  <property name="hbm2ddl.auto"></property>   -->
+
+		<!-- JDBC connection pool (use the built-in) -->
+		<!-- <property name="connection.pool_size">2</property> -->
+
+		<!-- Enable Hibernate's current session context -->
+		<!-- 这个使用后，spring无法管理sessionFactory -->
+		<!-- <property name="current_session_context_class">org.hibernate.context.ManagedSessionContext</property> -->
+	
+		 
+		
+		<!--   
+		<mapping   class="com.sunit.evaltable.action.EvaltableAction" />  
+		<mapping  class="com.sunit.operator.po.Operator" /> 
+		<mapping class="com.sunit.sysmanager.po.User" />
+		<mapping class="com.sunit.sysmanager.po.Depart" />
+		<mapping class="com.sunit.sysmanager.po.Jobs" />
+		<mapping class="com.sunit.sysmanager.po.Role" /> 
+		<mapping class="com.sunit.sysmanager.po.NaviMenu" /> 
+		<mapping class="com.sunit.sysmanager.po.SysResource" /> 
+		<mapping class="com.sunit.global.singleLogin.po.ClusterSingleLogin" /> 
+		 -->
+		<!-- 二级cache  -->
+		<!--  <class-cache class="po.Users" usage="nonstrict-read-write" />-->   
+
+	</session-factory>
+</hibernate-configuration>

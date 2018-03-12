@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+       ">
+
+	<description>Spring公共配置文件</description>
+
+
+	<!-- 使用annotation 自动注册bean,并保证@Required,@Autowired的属性被注入 -->
+	<context:component-scan base-package="com.sunit,gen,">
+
+	</context:component-scan>
+
+
+
+	<!-- Turn on annotations for beans -->
+	<context:annotation-config />
+
+
+
+	<!-- 使用annotation定义事务 -->
+	<!-- 
+		<tx:annotation-driven transaction-manager="TransactionManager" proxy-target-class="true" />
+	-->
+	<!-- Use transaction manager annotations -->
+	<!--<tx:annotation-driven transaction-manager="transactionManager" />
+		
+	-->
+
+	<!-- 数据源配置,使用Proxool数据库连接池 -->
+	<bean id="dataSource"
+		class="org.logicalcobwebs.proxool.ProxoolDataSource">
+		<property name="alias" value="SLH" />
+
+
+
+
+		<!--  	
+			
+			<property name="driver" value="oracle.jdbc.driver.OracleDriver" />
+			<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.13:1522:server10"/>
+			
+			
+			<property name="driverUrl" value="jdbc:oracle:thin:@vmwarexp:1521:ORCL"/>
+			
+			<property name="user" value="SLHDemo" /> 
+			<property name="password" value="sunit" />    -->
+
+		<property name="driver" value="com.mysql.jdbc.Driver" />
+		<property name="driverUrl"
+			value="jdbc:mysql://test.longerinfo.com:3306/scmdev?useOldAliasMetadataBehavior=true" />
+		<property name="user" value="root" />
+		<property name="password" value="vo123" />
+ 
+		<!-- 可用连接 不包括活动连接-->
+		<property name="prototypeCount" value="5" />
+		<!--最大连接数(默认5个),超过了这个连接数,再有请求时,就排在队列中等候 ,最大的等待请求数由maximum-new-connections决定 -->
+		<property name="maximumConnectionCount" value="200" />
+		<property name="minimumConnectionCount" value="10" />
+
+		<!--proxool自动侦察各个连接状态的时间间隔(毫秒),侦察到空闲的连接就马上回收,超时的销毁  默认30秒  
+			<house-keeping-sleep-time>90000</house-keeping-sleep-time>  -->
+		<!--在使用之前测试-->
+		<property name="testBeforeUse" value="true" />
+		<!--用于保持连接的测试语句 -->
+		<property name="houseKeepingTestSql" value="select now()" />
+		<property name="statistics" value="1m,15m,1d" />
+		<property name="statisticsLogLevel" value="info" />
+		<property name="trace" value="true" />
+		<property name="verbose" value="false" />
+		<property name="simultaneousBuildThrottle" value="40" />
+		<property name="maximumActiveTime" value="600000" />
+		<property name="jmx" value="false" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation"
+			value="classpath:hibernate.cfg.xml">
+		</property>
+
+		<property name="packagesToScan">
+			<list>
+				<value>com.sunit.*</value>
+			</list>
+		</property>
+
+		<!--  <property name="annotatedClasses">
+			<list> 
+			<value>po.Users</value>
+			<value>po.Depart</value> 
+			<value>po.Jobs</value>
+			<value>po.Product</value>
+			<value>po.TestTable</value>
+			</list>  
+			</property>
+		-->
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+
+		</property>
+	</bean>
+
+
+
+
+	<bean id="transactionInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="activitiTransactionManager" />
+		</property>
+		<!-- 配置事务属性 -->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="update*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="delete*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<!--  	<prop key="get*">PROPAGATION_REQUIRED,-Exception</prop>  -->
+				<!--	<prop key="find*">PROPAGATION_REQUIRED,-Exception</prop>  -->
+			</props>
+		</property>
+	</bean>
+
+	<!--自动代理 -->
+	<bean id="autoproxy"
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>*ManagerImpl</value>
+				<value>*ServiceImpl</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>transactionInterceptor</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/html/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+		<property name="order" value="0" />
+	</bean>
+
+
+	<bean id="BaseDao" class="com.sunit.global.base.dao.BaseDAO"
+		scope="prototype">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<bean id="globalPara" class="com.sunit.global.base.Global">
+		<property name="compressActive" value="false"></property><!-- 压缩js开关 -->
+		<property name="rootName" value="scm"></property><!-- 具体项目所用的文件夹名称  /html/{rootName}/**.jsp -->
+		
+		
+			<property name="uploadProtocol"  value="nfs"></property>  <!--文件共享协议  NFS / samba   -->
+		<!-- NFS Mount -->  
+		  <property  name="clusterFileServerDir"   value="c:/upload"></property>   <!-- 集群文件服务器所在目录 eg:smb://administrator:sunit68@192.168.0.68/upload-->
+		   
+		<!-- Samba-->  
+<!-- 		 <property name="clusterFileServerDomian"   value="192.168.0.253"></property> -->   <!-- 集群文件服务器所在目录 eg:smb://administrator:sunit68@192.168.0.68/upload-->
+		<!-- <property name="clusterFileServerDir"   value="smb://smbUser:vo_123@192.168.0.253/upload"></property>    -->  <!-- 集群文件服务器所在目录 eg:smb://administrator:sunit68@192.168.0.68/upload-->
+	<!-- 	 <property name="clusterFileServerUser"   value="smbUser"></property>  -->  <!-- 集群文件服务器-->
+	<!-- 	 <property name="clusterFileServerPwd"   value="vo_123"></property>  -->  <!-- 集群文件服务器--> 
+	
+	 
+		 
+		
+		
+		
+	</bean>
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!--  支持最大为2M
+			<property name="maxUploadSize">
+			<value>2100000</value> 
+			</property>-->
+	</bean>
+
+
+	<bean id="activitiTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="customGroupEntityManagerFactory"
+		class="com.sunit.workflow.custom.manager.CustomGroupEntityManagerFactory">
+	</bean>
+
+	<bean id="processEngineConfiguration"
+		class="org.activiti.spring.SpringProcessEngineConfiguration">
+		<!--这里是数据源的指定 指向你自己的dataSource -->
+		<property name="dataSource" ref="dataSource" />
+		<property name="transactionManager"
+			ref="activitiTransactionManager" />
+		<!-- 设置数据库schema的更新方式 -->
+		<property name="databaseSchemaUpdate" value="update" />
+		<property name="activityFontName" value="宋体" />
+		<property name="labelFontName" value="宋体" />
+
+		<!-- 是否启动jobExecutor -->
+		<property name="jobExecutorActivate" value="false" />
+		<property name="customSessionFactories">
+			<list>
+				<ref local="customGroupEntityManagerFactory" />
+			</list>
+		</property>
+		<property name="eventListeners">
+			<list>
+				<bean id="taskListener"
+					class="com.sunit.workflow.listener.TaskListener">
+				</bean>
+			</list>
+		</property>
+
+
+
+
+		<!-- 自动部署就是自己自动部署流程 意思就是 我本来没流程啊 怎么多出来的流程 就是在这里 自动部署的，流程只有部署了 用户才可以走这个流程 -->
+		<property name="deploymentResources">
+			<list>
+				<value>classpath*:/deployments/*</value>
+			</list>
+		</property>
+
+
+
+	</bean>
+
+	<bean id="processEngine"
+		class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration"
+			ref="processEngineConfiguration" />
+	</bean>
+
+	<bean id="repositoryService" factory-bean="processEngine"
+		factory-method="getRepositoryService" />
+	<bean id="runtimeService" factory-bean="processEngine"
+		factory-method="getRuntimeService" />
+	<bean id="formService" factory-bean="processEngine"
+		factory-method="getFormService" />
+	<bean id="identityService" factory-bean="processEngine"
+		factory-method="getIdentityService" />
+	<bean id="taskService" factory-bean="processEngine"
+		factory-method="getTaskService" />
+	<bean id="historyService" factory-bean="processEngine"
+		factory-method="getHistoryService" />
+	<bean id="managementService" factory-bean="processEngine"
+		factory-method="getManagementService" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- 定时器  -->
+	<task:annotation-driven />
+
+
+
+
+
+
+
+
+</beans>

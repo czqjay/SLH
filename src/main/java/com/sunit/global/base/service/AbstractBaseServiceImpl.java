@@ -56,19 +56,6 @@ public abstract class AbstractBaseServiceImpl<T> implements BaseService<T> {
 	}
 
 	public List<T> getAll() { 
-
-//		return getDao().getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<T>>() {
-//			@SuppressWarnings("unchecked")
-//			public List<T> doInHibernate(Session session) throws HibernateException {
-//				Criteria criteria = session.createCriteria(entityClass);
-//				criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-//				criteria.add((Criterion) Order.asc("orderNum"));
-//				return criteria.list();
-//			}
-//		});  
-		
-		
-		
 		return getDao().getHibernateTemplate().loadAll(entityClass);
 	}
 
@@ -266,7 +253,6 @@ public abstract class AbstractBaseServiceImpl<T> implements BaseService<T> {
 				new HibernateCallback<Integer>() {
 					public Integer doInHibernate(Session session)
 							throws HibernateException, SQLException {
-						org.hibernate.Transaction t =  session.beginTransaction();
 						Query q = session.createSQLQuery(sql);
 						if (values != null) { 
 							for (int i = 0; i < values.length; i++) {
@@ -274,7 +260,6 @@ public abstract class AbstractBaseServiceImpl<T> implements BaseService<T> {
 							}
 						}
 						int  k =  q.executeUpdate();
-						t.rollback();
 						return k;
 					}
 				}); 

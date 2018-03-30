@@ -97,8 +97,8 @@ static{
 	
 	
 	public static void reconfig(){ 
-		actionsMap.clear();
-		processsMap.clear();
+//		actionsMap.clear();
+//		processsMap.clear();
 		validateMethods.clear();
 		
 		
@@ -106,62 +106,16 @@ static{
 		
 		
 		
-		
-		//登录页面
-		ValidataeActions.addValidate("/front/j_spring_security_check","j_username","requiredValidator");
-		ValidataeActions.addValidate("/front/j_spring_security_check","j_username","mobileAndMailValidator");//mobileValidator到时换成只能输入手机号码
-		ValidataeActions.addValidate("/front/j_spring_security_check","j_password","requiredValidator");
-		ValidataeActions.addValidate("/front/j_spring_security_check","j_password","rangelengthValidator","{min:4,max:20}");
-		ValidataeActions.addValidate("/front/j_spring_security_check","j_password","digitLetterValidator");
+		ValidataeActions.addValidate("/agencyservice/sendEmailNoticeFeedback.action","nd","rangelengthValidator","{min:32,max:32}");
 
 		
 		
 		
-		ValidataeActions.addValidate("/agencycustom/frontAgencycustomSaveOfSellerAccount.action","javaValidator","javaValidator", new  Script.AbstractScriptExecute(){
-			public boolean execute(Script script) {
-				try { 
-					String  identifyingCode_disable = script.getRequest().getParameter("identifyingCode_disable");
-					
-					String account =(String) SessionContext.getAttribute(script.getRequest(), "userAccount");
-					
-					String identifyingCode =(String) SessionContext.getAttribute(script.getRequest(), account);
-					 
-					if(!SunitStringUtil.requireAndEquals(identifyingCode_disable,identifyingCode)){
-						script.setMsg("验证码错误"); 
-						return false;
-					} 
-					script.getRequest().getSession().removeAttribute(account);
-					
-				} catch (Exception e) { 
-					script.setMsg("验证码错误"); 
-					return false;
-				}
-				 
-				
-				
-				return true;
-			}
- 		} ); 
-		
 	
-		ValidataeActions.addValidate("/xwyuser/frontXwyuserDelete.action","javaValidator","javaValidator",new AbstractScriptExecute(){
-			
-			@Override 
-			public boolean execute(Script script) {
-				HttpServletRequest request = script.getRequest(); 
-				String mid =   (String) request.getSession().getAttribute("orgManageId");
-				String delIds = (String) request.getParameter("ids");
-				if(delIds.indexOf(mid)>-1){
-					script.setMsg("管理帐号不能删除");
-					return false;
-				}
-				return true;
-			}
-		}); 
+		
 	}
 	
 	static {
-		reconfig();
 		
 		validateMethods.put("notBlankValidator", NotBlankValidator.class);
 		validateMethods.put("requiredValidator", NotBlankValidator.class);

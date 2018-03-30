@@ -165,6 +165,18 @@ public class LoginSuccessListener implements
 						Arrays.toString(departIdList.toArray()).replaceAll(" ",
 								"").replaceAll("\\[|\\]", "'").replaceAll(",",
 								"','"));
+		
+		departIdList.clear();
+		for (Depart depart : u.getDeparts()) {
+			departIdList.add(depart.getDeptname());
+		}
+		((SecurityContextImpl) SecurityContextHolder.getContext()).getRequest()
+		.getSession().setAttribute(
+				"departNames",
+				Arrays.toString(departIdList.toArray()).replaceAll(" ",
+						"").replaceAll("\\[|\\]", ""));
+		
+		
 		Operator operator = new Operator();
 		operator.setUserId(u.getId());
 		operator.setOperatortime(DateUtil.getCurrentTime());
@@ -196,5 +208,6 @@ public class LoginSuccessListener implements
 
 	}
 
+	
 	
 }

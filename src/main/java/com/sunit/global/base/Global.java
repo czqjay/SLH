@@ -206,8 +206,18 @@ public  static void fillDataRange(StringBuffer hqlBuf,HttpServletRequest request
 	if(u.getDatatype().equals("1") ) {  
 		hqlBuf.append("  and "+prefix+" =  '"+ u.getAccountName()+"'");
 	}
+}
+
+
+public  static void fillDataRangeById(StringBuffer hqlBuf,HttpServletRequest request,String prefix, String userDataType) {
 	
+	User u  =SessionContext.getUser(request);  
+	if(u.getDatatype().equals(userDataType) ) {  
+		hqlBuf.append("  and "+prefix+" =  '"+ u.getId()+"'");
+	}
+	 
 } 
+
 
 public static  String getCustomNo(String pre) {
 	// TODO  改良ID算法  

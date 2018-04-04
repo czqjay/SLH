@@ -4,7 +4,7 @@
 	<groupId>SLH</groupId>
 	<artifactId>slh-src</artifactId>
 	<version>1.5</version>
-
+ 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.8.1</version> 
 
 		</dependency>
 		<dependency>
@@ -23,7 +23,7 @@
 			<version>5.0-1</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
+		<dependency> 
 			<groupId>javax.faces</groupId>
 			<artifactId>jsf-api</artifactId>
 			<version>1.2_04</version>
@@ -145,26 +145,21 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-annotations</artifactId>
-			<version>3.3.0.GA</version>
+			<version>3.3.0.ga</version>
 		</dependency>
-
-		<dependency>
-			<groupId>jcifs</groupId>
+  
+		<dependency> 
+			<groupId>jcifs</groupId>  
 			<artifactId>jcifs</artifactId>
 			<version>1.3.17</version>
 		</dependency>
 
 
-
-
-
-
-
-
+  
 		<dependency>
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-common-rest</artifactId>
-			<version>5.15.1</version>
+			<version>5.15.1</version> 
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.activiti/activiti-json-converter -->
 		<dependency>
